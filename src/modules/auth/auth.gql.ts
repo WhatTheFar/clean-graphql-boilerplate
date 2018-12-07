@@ -13,9 +13,7 @@ export const signupGql = gql`
 			firstName: $firstName
 			lastName: $lastName
 		) {
-			payload {
-				token
-			}
+			token
 		}
 	}
 `;
@@ -23,9 +21,7 @@ export const signupGql = gql`
 export const loginGql = gql`
 	mutation login($email: String!, $password: String!) {
 		login(email: $email, password: $password) {
-			payload {
-				token
-			}
+			token
 		}
 	}
 `;

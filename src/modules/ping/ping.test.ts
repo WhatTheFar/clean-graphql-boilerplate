@@ -1,5 +1,4 @@
-import { MutationResolvers } from '@src/generated/graphqlgen';
-import ArgsSignup = MutationResolvers.ArgsSignup;
+import { SignupArgs } from '@module/auth/auth.args';
 import { graphqlServer } from '@src/server';
 import { getUserBearerToken, mockUserArgs, requestGql } from '@src/test-utils';
 import { createTestUserIfNotExist } from '@src/test-utils';
@@ -9,7 +8,7 @@ import gql from 'graphql-tag';
 let token: string;
 
 const email = 'ping@gmail.com';
-const signupArgs: ArgsSignup = {
+const signupArgs: SignupArgs = {
 	...mockUserArgs,
 	email
 };
@@ -49,7 +48,7 @@ test('pingAuthenticated', async () => {
 
 test('pingAuthenticated without supertest', async () => {
 	expect.assertions(1);
-	const tag = `
+	const tag = gql`
 		query {
 			pingAuthenticated
 		}
