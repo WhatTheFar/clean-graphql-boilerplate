@@ -1,21 +1,22 @@
-import { SignupArgs } from '@module/auth/auth.args';
+import { prisma } from '@configs/prisma.config';
+import { SignupArgs } from '@modules/auth/auth.args';
 import { graphqlServer } from '@src/server';
-import { getUserBearerToken, mockUserArgs, requestGql } from '@src/test-utils';
-import { createTestUserIfNotExist } from '@src/test-utils';
+import { getUserBearerToken, mockUserArgs, requestGql } from '@utils/test.util';
+import { createTestUserIfNotExist } from '@utils/test.util';
 import { graphql } from 'graphql';
 import gql from 'graphql-tag';
 
 let token: string;
 
-const email = 'ping@gmail.com';
+const email = 'ping.test@gmail.com';
 const signupArgs: SignupArgs = {
 	...mockUserArgs,
 	email
 };
 
 beforeAll(async () => {
-	await createTestUserIfNotExist(signupArgs);
-	token = await getUserBearerToken({ email });
+	await createTestUserIfNotExist(signupArgs, prisma);
+	token = await getUserBearerToken({ email }, prisma);
 });
 
 test('ping', async () => {
@@ -44,20 +45,4 @@ test('pingAuthenticated', async () => {
 		.expect(res => {
 			expect(res.body.data).toEqual({ pingAuthenticated: 'pong' });
 		});
-});
-
-test('pingAuthenticated without supertest', async () => {
-	expect.assertions(1);
-	const tag = gql`
-		query {
-			pingAuthenticated
-		}
-	`;
-
-	const response = await graphql(graphqlServer.executableSchema, tag, null, {
-		request: { headers: { authorization: token } },
-		db: { exists: { User: jest.fn().mockReturnValue(true) } }
-	});
-
-	expect(response.data).toEqual({ pingAuthenticated: 'pong' });
 });

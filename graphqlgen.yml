@@ -6,7 +6,7 @@ models:
   files:
     - ./src/generated/prisma.ts
     - ./src/types.ts
-    - ./src/auth/auth.types.ts
+    - ./src/module/auth/auth.types.ts
 
 output: ./src/generated/graphqlgen.ts
 

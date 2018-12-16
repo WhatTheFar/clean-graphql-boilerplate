@@ -12,4 +12,4 @@ if [ ! "$(docker ps -q -f name=$PRISMA_CONTAINER_NAME)" ]; then
     bash scripts/setup-dev.sh
 fi
 echo "# Running dev"
-yarn start
+yarn watch

@@ -1,6 +1,5 @@
+import { Prisma } from '@src/generated/prisma';
 import { Field, ObjectType } from 'type-graphql';
-import { Prisma } from './generated/prisma';
-// tslint:disable:interface-name
 // tslint:disable:max-classes-per-file
 
 export type OmitStrict<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

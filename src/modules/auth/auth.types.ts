@@ -1,4 +1,4 @@
-import { User } from '@model/user.models';
+import { User } from '@models';
 import { MutationValidationError } from '@src/types';
 import { Field, ObjectType } from 'type-graphql';
 // tslint:disable:max-classes-per-file

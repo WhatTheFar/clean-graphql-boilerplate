@@ -1,5 +1,3 @@
-import './module-alias';
-
 import { AddressInfo } from 'net';
 import { server } from './server';
 

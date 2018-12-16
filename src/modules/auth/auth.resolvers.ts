@@ -1,7 +1,6 @@
-import { User } from '@src/models/user.models';
+import { mapUserDataToUser, User } from '@src/models';
 import { Context } from '@src/types';
-import { AuthError, getUser } from '@src/utils';
-import * as bcrypt from 'bcryptjs';
+import { getUser } from '@src/utils';
 import { GraphQLResolveInfo } from 'graphql';
 import {
 	Args,
@@ -15,13 +14,18 @@ import {
 	ResolverInterface,
 	Root
 } from 'type-graphql';
+import { Inject, Service } from 'typedi';
 import { LoginArgs, SignupArgs } from './auth.args';
-import { createUserToPrisma, generateToken } from './auth.services';
+import { AuthService } from './auth.services';
 import { AuthPayload } from './auth.types';
 // tslint:disable:max-classes-per-file
 
+@Service()
 @Resolver()
 export class AuthResolver {
+	@Inject()
+	private readonly authService: AuthService;
+
 	@Authorized()
 	@Query(returns => User, {
 		description: 'Get current User from Authorization header.'
@@ -35,15 +39,12 @@ export class AuthResolver {
 		@Args() args: LoginArgs,
 		@Ctx() ctx: Context
 	): Promise<AuthPayload> {
-		const user = await ctx.db.query.user({ where: { email: args.email } });
-		const valid = await bcrypt.compare(args.password, user ? user.password : '');
+		const user = await this.authService.loginUser(args);
 
-		if (!valid || !user) {
-			throw new AuthError();
-		}
+		const token = AuthService.generateToken(user);
 
 		return {
-			token: generateToken(user),
+			token,
 			user
 		};
 	}
@@ -53,9 +54,11 @@ export class AuthResolver {
 		@Args() args: SignupArgs,
 		@Ctx() ctx: Context
 	): Promise<AuthPayload> {
-		const user = await createUserToPrisma(ctx.db, args);
+		const user = await this.authService.signupUser(args);
+		const token = AuthService.generateToken(user);
+
 		return {
-			token: generateToken(user),
+			token,
 			user
 		};
 	}
@@ -71,7 +74,7 @@ export class AuthPayloadResolver implements ResolverInterface<AuthPayload> {
 	): Promise<User> {
 		if (parent.user.id) {
 			const user = await ctx.db.query.user({ where: { id: parent.user.id } }, info);
-			return user || parent.user;
+			return user ? mapUserDataToUser(user) : parent.user;
 		}
 		return parent.user;
 	}

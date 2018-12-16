@@ -18,4 +18,4 @@ services:
       - .:/opt/app
     environment: 
       NODE_ENV: development
-    command: bash /wait-for-it.sh -t 30 prisma:4466 -- sh -c 'yarn && yarn prisma-deploy && yarn start'
+    command: bash /wait-for-it.sh -t 30 prisma:4466 -- sh -c 'yarn && yarn prisma-deploy && yarn start:dev'

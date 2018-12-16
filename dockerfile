@@ -27,4 +27,4 @@ RUN yarn
 # Build dist
 RUN yarn build
 
-CMD yarn start:prod
+CMD yarn start
